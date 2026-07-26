@@ -3,6 +3,9 @@
 EXTERNALS := $(shell realpath ./externals)
 IMAGE_NAME := xinix-dev
 
+limine_bios_files := limine-bios.sys limine-bios-cd.bin limine-uefi-cd.bin
+limine_efi_boot_files := BOOTX64.EFI BOOTIA32.EFI
+
 all: iso
 
 clean:
@@ -16,9 +19,9 @@ iso: kernel limine limine.conf
 	rm -rf target/iso-root
 	mkdir -p target/iso-root/boot/limine
 	cp -v kernel/target/kernel target/iso-root/boot/
-	cp -v limine.conf externals/limine-binary/{limine-bios.sys,limine-bios-cd.bin,limine-uefi-cd.bin} target/iso-root/boot/limine/
+	cp -v limine.conf $(limine_bios_files:%=externals/limine-binary/%) target/iso-root/boot/limine/
 	mkdir -p target/iso-root/EFI/BOOT
-	cp -v externals/limine-binary/{BOOTX64.EFI,BOOTIA32.EFI} target/iso-root/EFI/BOOT
+	cp -v $(limine_efi_boot_files:%=externals/limine-binary/%) target/iso-root/EFI/BOOT
 	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus \
 		-apm-block-size 2048 --efi-boot boot/limine/limine-uefi-cd.bin \
