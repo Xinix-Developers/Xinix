@@ -1,5 +1,6 @@
 // Copied from the Limine sample:
 // https://github.com/Limine-Bootloader/limine-c-template-x86-64/blob/trunk/kernel/src/memory.c
+// And then malloc was added
 
 #include <memory.h>
 #include <stddef.h>
@@ -60,3 +61,23 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 
   return 0;
 }
+
+// end copied code
+
+#define BUMP_HEAP_SIZE 8192000
+
+char bump_heap[BUMP_HEAP_SIZE] = {};
+size_t bump_heap_ptr = 0;
+
+void *malloc(size_t size) {
+  if (bump_heap_ptr + size >= BUMP_HEAP_SIZE) {
+    return nullptr;
+  } else {
+    void *result = &bump_heap[bump_heap_ptr];
+    size_t align = sizeof(max_align_t);
+    bump_heap_ptr += (size + align - 1) / align * align;
+    return result;
+  }
+}
+
+void free(void *_ptr) {}

@@ -1,5 +1,6 @@
 #include <auxv.h>
 #include <framebuffer.h>
+#include <memory.h>
 
 #include <flanterm.h>
 #include <flanterm_backends/fb.h>
@@ -47,8 +48,12 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 1, 0, 0, 0,
       0);
 
-  const char msg[] = "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n";
+  const char msg[] = "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n\r\n";
   flanterm_write(ft_ctx, msg, sizeof(msg));
+
+  char *alloc_test = malloc(40);
+  memcpy(alloc_test, "Did malloc work?\r\nOf course it did :D\r\n", 40);
+  flanterm_write(ft_ctx, alloc_test, 40);
 
   hcf();
 }
