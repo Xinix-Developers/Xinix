@@ -5,13 +5,12 @@
 override CFLAGS += \
 	-g \
 	-MMD \
-	-nostdinc \
+	-ffreestanding \
 	-Wall \
 	-std=c23 \
 	--target=x86_64-unknown-none-elf
 
-override CPPFLAGS += \
-	-I ../freestanding-c-hdrs/include
+override CPPFLAGS +=
 
 CC := clang
 

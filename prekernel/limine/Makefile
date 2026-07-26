@@ -5,7 +5,7 @@
 override CFLAGS += \
 	-g \
 	-MMD \
-	-nostdinc \
+	-ffreestanding \
 	-Wall \
 	-std=c23 \
 	--target=x86_64-unknown-none-elf
@@ -13,8 +13,7 @@ override CFLAGS += \
 override CPPFLAGS += \
 	-I include \
 	-I ../../kernel/include \
-	-I $(EXTERNALS)/limine-protocol/include \
-	-I $(EXTERNALS)/freestanding-c-hdrs/include
+	-I $(EXTERNALS)/limine-protocol/include
 
 CC := clang
 

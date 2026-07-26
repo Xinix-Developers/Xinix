@@ -5,14 +5,13 @@
 override CFLAGS += \
 	-g \
 	-MMD \
-	-nostdinc \
+	-ffreestanding \
 	-Wall \
 	-std=c23 \
 	--target=x86_64-unknown-none-elf
 
 override CPPFLAGS += \
 	-I include \
-	-I $(EXTERNALS)/freestanding-c-hdrs/include \
 	-I $(EXTERNALS)/Flanterm/src
 
 override LDFLAGS += \
