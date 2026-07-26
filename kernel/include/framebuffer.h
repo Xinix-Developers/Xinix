@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 // Lifted from Limine because it's good
