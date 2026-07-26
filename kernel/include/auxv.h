@@ -10,4 +10,4 @@ typedef struct {
 // a_type values
 #define AT_NULL 0               // end of list
 #define AT_IGNORE 1             // no-op entry
-#define AT_KZINIX_FRAMEBUFFER 2 // framebuffer structure
+#define AT_KXINIX_FRAMEBUFFER 2 // framebuffer structure

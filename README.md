@@ -1,4 +1,4 @@
-# Zinix - Community OS project
+# Xinix - Community OS project
 
 ## Building
 

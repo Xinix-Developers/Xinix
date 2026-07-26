@@ -60,7 +60,7 @@ void pkmain(void) {
         .mode_count = l_fb->mode_count,
         .modes = (video_mode **)l_fb->modes,
     };
-    auxv_t auxv_fb = {AT_KZINIX_FRAMEBUFFER, {.a_ptr = (void *)&fb}};
+    auxv_t auxv_fb = {AT_KXINIX_FRAMEBUFFER, {.a_ptr = (void *)&fb}};
     auxv[0] = auxv_fb;
   }
 
