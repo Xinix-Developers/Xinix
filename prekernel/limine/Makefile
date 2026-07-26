@@ -12,6 +12,8 @@ override CFLAGS += \
 
 override CPPFLAGS += \
 	-I include \
+	-I ../../common/include \
+	-I ../../common/include/$(ARCH) \
 	-I ../../kernel/include \
 	-I $(EXTERNALS)/limine-protocol/include
 

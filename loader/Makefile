@@ -10,7 +10,10 @@ override CFLAGS += \
 	-std=c23 \
 	--target=x86_64-unknown-none-elf
 
-override CPPFLAGS +=
+override CPPFLAGS += \
+	-I include \
+	-I ../common/include \
+	-I ../common/include/$(ARCH) \
 
 CC := clang
 
