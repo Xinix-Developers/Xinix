@@ -1,0 +1,9 @@
+[submodule "prekernel/limine/limine-protocol"]
+	path = externals/limine-protocol
+	url = https://github.com/Limine-Bootloader/limine-protocol
+[submodule "externals/freestanding-c-hdrs"]
+	path = externals/freestanding-c-hdrs
+	url = https://github.com/osdev0/freestanding-c-hdrs.git
+[submodule "externals/Flanterm"]
+	path = externals/Flanterm
+	url = https://github.com/Mintsuki/Flanterm

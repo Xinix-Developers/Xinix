@@ -1,0 +1,3 @@
+BreakAfterAttributes: "Always"
+InsertNewlineAtEOF: true
+TabWidth: 4
