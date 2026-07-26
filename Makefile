@@ -7,6 +7,7 @@ all: iso
 
 clean:
 	rm -rf target/iso-root
+	make -C loader clean
 	make -C prekernel clean
 	make -C externals/flanterm-build clean
 	make -C kernel clean
@@ -27,6 +28,7 @@ iso: kernel limine limine.conf
 	rm -rf target/iso-root
 
 kernel:
+	make -C loader EXTERNALS=$(EXTERNALS)
 	make -C prekernel EXTERNALS=$(EXTERNALS)
 	make -C externals/flanterm-build
 	make -C kernel EXTERNALS=$(EXTERNALS) LDSCRIPT=$(shell realpath ./prekernel/target/link.ld) PREKERNEL=$(shell realpath ./prekernel/target/prekernel.a)
