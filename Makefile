@@ -1,7 +1,7 @@
 .PHONY: all clean iso kernel limine
 
 EXTERNALS := $(shell realpath ./externals)
-IMAGE_NAME := xinix-dev
+IMAGE_NAME := zinix-dev
 
 all: iso
 

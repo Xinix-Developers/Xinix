@@ -17,7 +17,7 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
 
   for (auxv_t *auxv_ent = auxv; auxv_ent->a_type != AT_NULL; auxv_ent++) {
     switch (auxv_ent->a_type) {
-    case AT_KXINIX_FRAMEBUFFER:
+    case AT_KZINIX_FRAMEBUFFER:
       fb = (framebuffer *)auxv_ent->a_un.a_ptr;
       break;
     }
@@ -47,7 +47,7 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 1, 0, 0, 0,
       0);
 
-  const char msg[] = "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n";
+  const char msg[] = "Zinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n";
   flanterm_write(ft_ctx, msg, sizeof(msg));
 
   hcf();
