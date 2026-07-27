@@ -12,17 +12,26 @@ static void hcf(void) {
   }
 }
 
+static union auxval_t __auxent[128-2];
+
+union auxval_t getauxval(unsigned long a_type) {
+  if(a_type < 2 || a_type > 128)
+    return (union auxval_t){};
+  else
+    return __auxent[a_type-2];
+}
+
+
 [[noreturn]]
 extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
   framebuffer *fb;
 
   for (auxv_t *auxv_ent = auxv; auxv_ent->a_type != AT_NULL; auxv_ent++) {
-    switch (auxv_ent->a_type) {
-    case AT_KXINIX_FRAMEBUFFER:
-      fb = (framebuffer *)auxv_ent->a_un.a_ptr;
-      break;
-    }
+    if(auxv_ent->a_type != AT_IGNORE)
+      __auxent[auxv_ent->a_type - 2] = auxv_ent->a_un;
   }
+
+  fb = (framebuffer *)getauxval(AT_KXINIX_FRAMEBUFFER).a_ptr;
 
   video_mode *fb_mode = fb->modes[0];
   // Pick the highest-resolution mode we can find that flanterm will understand

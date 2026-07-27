@@ -20,7 +20,7 @@ int rand_slow_get_enthropy(uint8_t  _output[static restrict 16]) {
         a[1] = ((((uint64_t)rand_slow_get_enthropy)<<20) & 0xFFFF'FFFF'0000'0000);
         for(size_t i = 0; i < 32; i+=2) {
             uint32_t r;
-            __asm__ volatile("rdtsc": "=a"(r) :: "edx");
+            __asm__ volatile("rdtsc\n\tsfence": "=a"(r) :: "edx");
             a[1] = stdc_rotate_right(a[1], 2) | (r & 3);
         }
     }

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <bits/feat_test.h>
+#include <stddef.h>
+
 typedef struct {
-  int a_type;
-  union {
+  unsigned long a_type;
+  union auxval_t{
     long a_val;
     void *a_ptr;
     void (*a_fnc)();
@@ -27,3 +30,5 @@ typedef struct {
 
 
 #define AT_XINIX_MAX_KERNEL 127 
+
+union auxval_t getauxval(unsigned long a_type) _ATTRIBUTE_UNSEQ;
