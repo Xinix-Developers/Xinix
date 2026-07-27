@@ -2,10 +2,10 @@
 // https://github.com/Limine-Bootloader/limine-c-template-x86-64/blob/trunk/kernel/src/memory.c
 // And then malloc was added
 
+#include <limits.h>
 #include <memory.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <limits.h>
 
 // GCC and Clang reserve the right to generate calls to the following
 // 4 functions even if they are not directly called.
@@ -71,7 +71,7 @@ char bump_heap[BUMP_HEAP_SIZE] = {};
 size_t bump_heap_ptr = 0;
 
 void *malloc(size_t size) {
-  if (BUMP_HEAP_SIZE - bump_heap_ptr  < size) {
+  if (BUMP_HEAP_SIZE - bump_heap_ptr < size) {
     return nullptr;
   } else {
     void *result = &bump_heap[bump_heap_ptr];
@@ -81,20 +81,18 @@ void *malloc(size_t size) {
   }
 }
 
-void *calloc(size_t num, size_t size){
+void *calloc(size_t num, size_t size) {
   void *ptr = nullptr;
-  if( (num != 0) && (size != 0) && ((SIZE_MAX/num) >= size) ){
-    ptr = malloc((num*size));
-    if(ptr == nullptr){
+  if ((num != 0) && (size != 0) && ((SIZE_MAX / num) >= size)) {
+    ptr = malloc((num * size));
+    if (ptr == nullptr) {
       return ptr;
     }
-    ptr = memset(ptr, 0, num*size);
+    ptr = memset(ptr, 0, num * size);
     return ptr;
   }
 
   return ptr;
 }
 
-void free(void *_ptr) {
-  return;
-}
+void free(void *_ptr) { return; }
