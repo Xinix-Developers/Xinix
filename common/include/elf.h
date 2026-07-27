@@ -1,10 +1,11 @@
 #pragma once
 
+#include "bits/feat_test.h"
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbit.h>
 
-#define ELFMAGIC "\x7F" "ELF"
+constexpr char ELFMAGIC[4] = "\x7F" "ELF";
 
 enum ElfClass : uint8_t {
     ELFCLASSNONE = 0,
@@ -34,7 +35,7 @@ enum ElfVersion : uint8_t {
 };
 
 enum ElfOsAbi : uint8_t {
-    None = 0,
+    EOSABI_NONE = 0,
 };
 
 typedef struct {
@@ -47,6 +48,26 @@ typedef struct {
     uint8_t ei_pad[16-9];
 } Elf_Ident;
 
+static inline long elf_validate_ident(const Elf_Ident* _e_ident, enum ElfClass req_class, enum ElfData req_data, enum ElfOsAbi supabi) _ATTRIBUTE_UNSEQ {
+    if(_e_ident->ei_magic[0] != ELFMAGIC[0] || _e_ident->ei_magic[1] != ELFMAGIC[1] || _e_ident->ei_magic[2] != ELFMAGIC[2] || _e_ident->ei_magic[3] != ELFMAGIC[3])
+        return -16;
+    else if(_e_ident->ei_class != req_class || _e_ident->ei_data != req_data)
+        return -17;
+    else if(_e_ident->ei_version != EV_CURRENT)
+        return -18;
+    else if(_e_ident->ei_osabi != EOSABI_NONE || _e_ident->ei_osabi != supabi)
+        return -19;
+    else 
+        for(size_t n = 0; n < sizeof(_e_ident -> ei_pad); n++)
+            if(_e_ident->ei_pad[n] != 0)
+                return -20;
+
+    return 0;
+}
+
+static inline long elf_validate_ident_native(const Elf_Ident* _e_ident, enum ElfOsAbi supabi) _ATTRIBUTE_UNSEQ {
+    return elf_validate_ident(_e_ident, ELFCLASSNATIVE, ELFDATANATIVE, supabi);
+}
 
 typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Size;

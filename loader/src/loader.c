@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <sysresult.h>
+
 extern ElfNative_Dyn _DYNAMIC[];
 
 union GotEntry {
@@ -13,6 +15,10 @@ union GotEntry {
 
 extern union GotEntry _GLOBAL_OFFSET_TABLE_[];
 
-void* get_image_base_addr(void) {
+void* image_base_addr(void) {
     return (void*) ((uintptr_t)(&_DYNAMIC) - _GLOBAL_OFFSET_TABLE_[0].value);
+}
+
+sysresult2_t loader_map_elf(Elf64_Ehdr* e_hdr) {
+    return SYSRESULT2_OK(nullptr);
 }
