@@ -20,15 +20,17 @@ typedef struct {
 #define AT_BASE 7
 #define AT_PLATFORM 8
 
-#define AT_RANDOM 26
+#define AT_RANDOM 26 // Points to 16 random bytes
 
 // Xinix specific region begins at 64
 
-#define AT_XINIX_MAX_USER 95
+#define AT_XINIX_MAX_USER 95 // Maximum value for an a_type entry passed to a userspace program
 // Xinix Kernel region begins at 96
 #define AT_KXINIX_FRAMEBUFFER 96 // framebuffer structure
+#define AT_KXINIX_XSDT 97 // XSDT
+#define AT_KXINIX_BOOTP_GUID 98 // Boot parition GUID (GPT labeled disk)
+#define AT_KXINIX_BOOTP_MBR 99 // Boot partion MBR label
 
-
-#define AT_XINIX_MAX_KERNEL 127 
+#define AT_XINIX_MAX_KERNEL 127 // Maximum value for an a_type entry passed to the kernel
 
 union auxval_t getauxval(unsigned long a_type) _ATTRIBUTE_UNSEQ;
