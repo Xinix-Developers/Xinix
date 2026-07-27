@@ -4,7 +4,7 @@ BOOTLOADER := limine
 
 all:
 	@mkdir -p target
-	make -C $(BOOTLOADER)
+	make -C $(BOOTLOADER) ARCH=$(ARCH)
 	cp $(BOOTLOADER)/target/prekernel.a $(BOOTLOADER)/target/link.ld target/
 
 clean:

@@ -13,6 +13,12 @@ typedef struct {
 #define AT_NULL 0               // end of list
 #define AT_IGNORE 1             // no-op entry
 
+#define AT_PAGESZ 6
+#define AT_BASE 7
+#define AT_PLATFORM 8
+
+#define AT_RANDOM 26
+
 // Xinix specific region begins at 64
 
 #define AT_XINIX_MAX_USER 95

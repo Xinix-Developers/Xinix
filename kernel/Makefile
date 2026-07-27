@@ -12,6 +12,8 @@ override CFLAGS += \
 
 override CPPFLAGS += \
 	-I include \
+	-I ../common/include \
+	-I ../common/include/$(ARCH) \
 	-I $(EXTERNALS)/Flanterm/src
 
 override LDFLAGS += \

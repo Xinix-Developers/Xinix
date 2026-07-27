@@ -1,3 +1,4 @@
+#include "random.h"
 #include <stdint.h>
 
 #include <auxv.h>
@@ -29,6 +30,8 @@ static volatile uint64_t limine_requests_end_marker[] =
 [[noreturn]]
 extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]);
 
+extern void init_cpu_feature_array(void);
+
 /// IMPLEMENTATION ///
 
 [[noreturn]]
@@ -38,18 +41,28 @@ static void hcf(void) {
   }
 }
 
+
+
 [[noreturn]]
 void pkmain(void) {
   if (!LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision)) {
     hcf();
   }
 
+  init_cpu_feature_array();
+
   char *argv[] = {"kernel", 0};
   char *envp[] = {0};
-  auxv_t auxv[] = {
-      {AT_IGNORE},
+  auxv_t auxv[16] = {
       {0},
   };
+
+  auxv_t* auxtarg = auxv;
+
+  char cpu_name[] = ARCH;
+
+  *auxtarg++ = (auxv_t){.a_type = AT_PAGESZ, .a_un.a_val = 4096};
+  *auxtarg++ = (auxv_t){.a_type = AT_PLATFORM, .a_un.a_ptr = cpu_name};
 
   if (framebuffer_request.response != nullptr &&
       framebuffer_request.response->framebuffer_count >= 1) {
@@ -61,8 +74,13 @@ void pkmain(void) {
         .modes = (video_mode **)l_fb->modes,
     };
     auxv_t auxv_fb = {AT_KXINIX_FRAMEBUFFER, {.a_ptr = (void *)&fb}};
-    auxv[0] = auxv_fb;
+    *auxtarg++ = auxv_fb;
   }
+
+  uint8_t random[16];
+  if(rand_slow_get_enthropy(random)==0)
+    *auxtarg++ = (auxv_t){.a_type = AT_RANDOM, .a_un.a_ptr = random};
+  
 
   kmain(1, argv, envp, auxv);
 }

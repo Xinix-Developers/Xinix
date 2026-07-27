@@ -12,16 +12,19 @@ override CFLAGS += \
 
 override CPPFLAGS += \
 	-I include \
+	-I ../include \
+	-I ../include/$(ARCH) \
 	-I ../../common/include \
 	-I ../../common/include/$(ARCH) \
 	-I ../../kernel/include \
-	-I $(EXTERNALS)/limine-protocol/include
+	-I $(EXTERNALS)/limine-protocol/include \
+	'-DARCH="$(ARCH)"'
 
 CC := clang
 
-srcfiles := $(patsubst src/%,%,$(shell find src -type f -name '*.c'))
-objs := $(srcfiles:%.c=target/%.o)
-depfiles := $(srcfiles:%.c=target/%.d)
+
+objs := $(patsubst src/%.c,target/%.o,$(shell find src -type f -name '*.c')) $(patsubst ../shared/src/%.c,target/%.o,$(shell find ../shared/src -type f -name '*.c')) $(patsubst ../shared/$(ARCH)/src/%.c,target/%.o,$(shell find ../shared/$(ARCH)/src -type f -name '*.c'))
+depfiles := $(objs:target/%.o=target/%.d)
 outputs := target/prekernel.a target/link.ld
 
 all: $(outputs)
@@ -41,5 +44,13 @@ target/%.ld: src/%.ld
 	cp $< $@
 
 target/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+target/%.o: ../shared/src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+target/%.o: ../shared/$(ARCH)/src/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
