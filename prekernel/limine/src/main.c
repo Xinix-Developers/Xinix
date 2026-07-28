@@ -41,8 +41,6 @@ static void hcf(void) {
   }
 }
 
-
-
 [[noreturn]]
 void pkmain(void) {
   if (!LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision)) {
@@ -57,7 +55,7 @@ void pkmain(void) {
       {0},
   };
 
-  auxv_t* auxtarg = auxv;
+  auxv_t *auxtarg = auxv;
 
   char cpu_name[] = ARCH;
 
@@ -78,9 +76,8 @@ void pkmain(void) {
   }
 
   uint8_t random[16];
-  if(rand_slow_get_enthropy(random)==0)
+  if (rand_slow_get_enthropy(random) == 0)
     *auxtarg++ = (auxv_t){.a_type = AT_RANDOM, .a_un.a_ptr = random};
-  
 
   kmain(1, argv, envp, auxv);
 }

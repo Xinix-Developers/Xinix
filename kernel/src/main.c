@@ -13,13 +13,13 @@ static void hcf(void) {
   }
 }
 
-static union auxval_t __auxent[128-2];
+static union auxval_t __auxent[128 - 2];
 
 union auxval_t getauxval(unsigned long a_type) {
-  if(a_type < 2 || a_type > 128)
+  if (a_type < 2 || a_type > 128)
     return (union auxval_t){};
   else
-    return __auxent[a_type-2];
+    return __auxent[a_type - 2];
 }
 
 size_t stdout_handler(void *data, size_t len, const char *bytes) {
@@ -33,7 +33,7 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
   framebuffer *fb;
 
   for (auxv_t *auxv_ent = auxv; auxv_ent->a_type != AT_NULL; auxv_ent++) {
-    if(auxv_ent->a_type != AT_IGNORE)
+    if (auxv_ent->a_type != AT_IGNORE)
       __auxent[auxv_ent->a_type - 2] = auxv_ent->a_un;
   }
 
@@ -41,7 +41,8 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
 
   video_mode *fb_mode = fb->modes[0];
   // Pick the highest-resolution mode we can find that flanterm will understand
-  // Note: this doesn't actually work right now because we don't change the framebuffer size, and that causes issues.
+  // Note: this doesn't actually work right now because we don't change the
+  // framebuffer size, and that causes issues.
   // TODO: Figure out how to do resizing correctly
   // TODO 2: abstract the terminal into a driver
   for (int i = 0; i < fb->mode_count; i++) {
@@ -63,7 +64,8 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 1, 0, 0, 0,
       0);
 
-  const char msg[] = "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n\r\n";
+  const char msg[] =
+      "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n\r\n";
   flanterm_write(ft_ctx, msg, sizeof(msg));
 
   char *alloc_test = malloc(40);
