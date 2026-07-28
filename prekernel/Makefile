@@ -10,3 +10,6 @@ all:
 clean:
 	make -C $(BOOTLOADER) clean
 	rm -f target/*
+
+clobber: clean
+	make -C $(BOOTLOADER) clobber

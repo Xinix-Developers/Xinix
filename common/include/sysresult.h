@@ -20,12 +20,15 @@ typedef struct _sysresult_2 sysresult2_t;
 #define SYSRESULT2_CODE(val) ((val)._code)
 #define SYSRESULT2_VALUE(val, T) ((T)((val)._value))
 
-#define SYSRESULT2_ERROR(val) ((sysresult2_t)((struct _sysresult_2){._code = val}))
-#define SYSRESULT2_OK(val) ((sysresult2_t)((struct _sysresult_2){._code = 0, ._value = (void*)val}))
+#define SYSRESULT2_ERROR(val)                                                  \
+  ((sysresult2_t)((struct _sysresult_2){._code = val}))
+#define SYSRESULT2_OK(val)                                                     \
+  ((sysresult2_t)((struct _sysresult_2){._code = 0, ._value = (void *)val}))
 #endif
 
-#define SYSRESULT_TRY_SYSRESULT2(val) do{\
-        auto _val = (val);\
-        if(_val < 0)\
-            return SYSRESULT2_ERROR(val);\
-}while(0)
+#define SYSRESULT_TRY_SYSRESULT2(val)                                          \
+  do {                                                                         \
+    auto _val = (val);                                                         \
+    if (_val < 0)                                                              \
+      return SYSRESULT2_ERROR(val);                                            \
+  } while (0)

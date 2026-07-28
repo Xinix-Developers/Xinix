@@ -17,6 +17,13 @@ clean:
 	make -C externals/flanterm-build clean
 	make -C kernel clean
 
+clobber: clean
+	rm target/*
+	make -C loader clobber
+	make -C prekernel clobber
+	make -C externals/flanterm-build clobber
+	make -C kernel clobber
+
 iso: kernel limine limine.conf
 	rm -rf target/iso-root
 	mkdir -p target/iso-root/boot/limine
