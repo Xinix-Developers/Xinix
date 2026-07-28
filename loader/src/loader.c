@@ -19,6 +19,8 @@ void *image_base_addr(void) {
   return (void *)((uintptr_t)(&_DYNAMIC) - _GLOBAL_OFFSET_TABLE_[0].value);
 }
 
-sysresult2_t loader_map_elf(Elf64_Ehdr *e_hdr) {
-  return SYSRESULT2_OK(nullptr);
+sysresult2_t loader_map_elf(Elf64_Ehdr* e_hdr) {
+    SYSRESULT_TRY_SYSRESULT2(elf_validate_ident_native(&e_hdr->e_ident, ELFOSABINONE));
+
+    return SYSRESULT2_OK(nullptr);
 }

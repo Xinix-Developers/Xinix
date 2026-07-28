@@ -8,7 +8,7 @@ typedef struct random_generator {
   sha3_state _state;
 } random_generator;
 
-int rand_slow_get_enthropy(uint8_t _output[static restrict 16]);
+int rand_slow_get_entropy(uint8_t _output[static restrict 16]);
 
 int rand_init(random_generator *_gen);
 
