@@ -1,6 +1,7 @@
 #include <auxv.h>
 #include <framebuffer.h>
 #include <memory.h>
+#include <stdio.h>
 
 #include <flanterm.h>
 #include <flanterm_backends/fb.h>
@@ -21,6 +22,11 @@ union auxval_t getauxval(unsigned long a_type) {
     return __auxent[a_type-2];
 }
 
+size_t stdout_handler(void *data, size_t len, const char *bytes) {
+  struct flanterm_context *ft_ctx = data;
+  flanterm_write(ft_ctx, bytes, len);
+  return len;
+}
 
 [[noreturn]]
 extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
@@ -63,6 +69,12 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
   char *alloc_test = malloc(40);
   memcpy(alloc_test, "Did malloc work?\r\nOf course it did :D\r\n", 40);
   flanterm_write(ft_ctx, alloc_test, 40);
+
+  stdout = calloc(1, sizeof(FILE));
+  stdout->data = ft_ctx;
+  stdout->write = stdout_handler;
+
+  printf("Address of printf is %#.16X\r\n", printf);
 
   hcf();
 }

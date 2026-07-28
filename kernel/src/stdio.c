@@ -1,7 +1,11 @@
 #include <memory.h>
 #include <stdarg.h>
+#include <stdbit.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
+FILE *stdout;
 
 int printf(const char *restrict format, ...) {
   va_list args;
@@ -46,7 +50,7 @@ struct string_file_data {
                     // terminator can be written
 };
 
-size_t write_string_file(void *data, size_t len, char *bytes) {
+size_t write_string_file(void *data, size_t len, const char *bytes) {
   struct string_file_data *sfdata = data;
   if (len > sfdata->remaining) {
     len = sfdata->remaining;
@@ -54,6 +58,7 @@ size_t write_string_file(void *data, size_t len, char *bytes) {
   memcpy(sfdata->buf, bytes, len);
   sfdata->buf += len;
   sfdata->remaining -= len;
+  return len;
 }
 
 size_t read_string_file(void *data, size_t len, char *bytes) {
@@ -89,4 +94,344 @@ int vsnprintf(char *restrict buffer, size_t bufsz, const char *restrict format,
   int result = vfprintf(&file, format, vlist);
   fclose(&file);
   return result;
+}
+
+#define MINUS_FLAG 0x01
+#define PLUS_FLAG 0x02
+#define SPACE_FLAG 0x04
+#define POUND_FLAG 0x08
+#define ZERO_FLAG 0x10
+
+#define NO_LEN 0
+#define HALF_HALF_LEN 1
+#define HALF_LEN 2
+#define LONG_LEN 3
+#define LONG_LONG_LEN 4
+#define INTMAX_LEN 5
+#define SIZE_LEN 6
+#define PTRDIFF_LEN 7
+#define MINWIDTH_LEN 8
+#define FAST_LEN 9
+#define LONG_DOUBLE_LEN 10
+#define DEC32_LEN 11
+#define DEC64_LEN 12
+#define DEC128_LEN 13
+
+static long long read_int(int length, int extra, va_list vlist) {
+  switch (length) {
+  case LONG_LEN:
+    return va_arg(vlist, long);
+  case LONG_LONG_LEN:
+    return va_arg(vlist, long long);
+  case INTMAX_LEN:
+    return va_arg(vlist, intmax_t);
+  case SIZE_LEN:
+    return va_arg(vlist, size_t);
+  case PTRDIFF_LEN:
+    return va_arg(vlist, ptrdiff_t);
+  case MINWIDTH_LEN:
+    switch (extra) {
+    case 64:
+      return va_arg(vlist, int_least64_t);
+    case 8:
+    case 16:
+    case 32:
+    default:
+      return va_arg(vlist, int_least32_t);
+    }
+  case FAST_LEN:
+    switch (extra) {
+    case 64:
+      return va_arg(vlist, int_fast64_t);
+    case 8:
+    case 16:
+    case 32:
+    default:
+      return va_arg(vlist, int_fast32_t);
+    }
+  case HALF_HALF_LEN:
+  case HALF_LEN:
+  default:
+    return va_arg(vlist, int);
+  }
+}
+
+static const char ZEROS[64] = "0000000000000000"
+                              "0000000000000000"
+                              "0000000000000000"
+                              "0000000000000000";
+
+static const char SPACES[64] = "                "
+                               "                "
+                               "                "
+                               "                ";
+
+#define WRITE_CHECKED(stream, count, buf, bytes_printed)                       \
+  do {                                                                         \
+    size_t written = stream->write(stream->data, count, buf);                  \
+    bytes_printed += written;                                                  \
+    if (written != count) {                                                    \
+      return bytes_printed;                                                    \
+    }                                                                          \
+  } while (0)
+
+size_t write_rep(FILE *restrict stream, int count, const char *buf,
+                 size_t *bytes_printed) {
+  while (count > 64) {
+    WRITE_CHECKED(stream, 64, buf, *bytes_printed);
+    count -= 64;
+  }
+  WRITE_CHECKED(stream, count, buf, *bytes_printed);
+  return 0;
+}
+
+static const char UPPER_HEX[16] = "0123456789ABCDEF";
+
+// Actual implementation
+int vfprintf(FILE *restrict stream, const char *restrict format,
+             va_list vlist) {
+  char buffer[16] = {};
+  size_t bytes_printed = 0;
+  for (;;) {
+    const char *cursor = format;
+    while (*cursor != '\0' && *cursor != '%') {
+      cursor++;
+    }
+    if (cursor != format) {
+      size_t to_print = cursor - format;
+      WRITE_CHECKED(stream, to_print, format, bytes_printed);
+    }
+    if (*cursor == '\0')
+      break;
+    cursor++; // skip the %
+
+    /// parse conversion specification
+    // parse any flags
+    int flags = 0;
+    for (;;) {
+      switch (*cursor) {
+      case '-':
+        flags |= MINUS_FLAG;
+        cursor++;
+        break;
+      case '+':
+        flags |= PLUS_FLAG;
+        cursor++;
+        break;
+      case ' ':
+        flags |= SPACE_FLAG;
+        cursor++;
+        break;
+      case '#':
+        flags |= POUND_FLAG;
+        cursor++;
+        break;
+      case '0':
+        flags |= ZERO_FLAG;
+        cursor++;
+        break;
+      default:
+        goto flags_done; // I miss Rust labeled breaks
+      }
+    }
+  flags_done:
+    // figure out if we have a minimum width specifier
+    int min_width = 0;
+    if (*cursor == '*') {
+      min_width = va_arg(vlist, int);
+    } else {
+      while (*cursor >= '0' && *cursor <= '9') {
+        min_width *= 10;
+        min_width += *cursor - '0';
+        cursor++;
+      }
+    }
+    // and figure out if we have a precision specifier
+    int precision = -1;
+    if (*cursor == '.') {
+      cursor++;
+      if (*cursor == '*') {
+        precision = va_arg(vlist, int);
+      } else {
+        precision = 0;
+        while (*cursor >= '0' && *cursor <= '9') {
+          precision *= 10;
+          precision += *cursor - '0';
+          cursor++;
+        }
+      }
+    }
+    // then parse the length specifier if it exists
+    int length_spec = NO_LEN;
+    int length_extra = 0;
+    switch (*cursor) {
+    case 'h':
+      length_spec = HALF_LEN;
+      cursor++;
+      if (*cursor == 'h') {
+        length_spec = HALF_HALF_LEN;
+      }
+      break;
+    case 'l':
+      length_spec = LONG_LEN;
+      cursor++;
+      if (*cursor == 'l') {
+        length_spec = LONG_LONG_LEN;
+      }
+      break;
+    case 'j':
+      length_spec = INTMAX_LEN;
+      cursor++;
+      break;
+    case 'z':
+      length_spec = SIZE_LEN;
+      cursor++;
+      break;
+    case 't':
+      length_spec = PTRDIFF_LEN;
+      cursor++;
+      break;
+    case 'w':
+      length_spec = MINWIDTH_LEN;
+      cursor++;
+      if (*cursor == 'f') {
+        length_spec = FAST_LEN;
+        cursor++;
+      }
+      while (*cursor >= '0' && *cursor <= '9') {
+        length_extra *= 10;
+        length_extra += *cursor - '0';
+        cursor++;
+      }
+      break;
+    case 'L':
+      length_spec = LONG_DOUBLE_LEN;
+      cursor++;
+      break;
+    case 'H':
+      length_spec = DEC32_LEN;
+      cursor++;
+      break;
+    case 'D':
+      length_spec = DEC64_LEN;
+      cursor++;
+      if (*cursor == 'D') {
+        length_spec = DEC128_LEN;
+        cursor++;
+      }
+      break;
+    default:
+      break;
+    }
+    // and now, the actual printing
+    switch (*cursor) {
+    case 'X':
+      unsigned long long value = read_int(length_spec, length_extra, vlist);
+      if (precision == -1) {
+        precision = 1;
+      }
+      int needed_precision =
+          sizeof(unsigned long long) * 2 - (stdc_leading_zeros(value) + 3) / 4;
+      if (needed_precision > precision) {
+        precision = needed_precision;
+      }
+      int effective_width = (flags & POUND_FLAG) ? (precision + 2) : precision;
+      if (precision <= 16) {
+        for (int idx = precision - 1; idx >= 0; idx--) {
+          buffer[idx] = UPPER_HEX[value & 0xF];
+          value >>= 4;
+        }
+        if (min_width <= effective_width) {
+          if (flags & POUND_FLAG) {
+            WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+          }
+          WRITE_CHECKED(stream, precision, buffer, bytes_printed);
+        } else {
+          int padding = min_width - effective_width;
+          if (flags & MINUS_FLAG) {
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            WRITE_CHECKED(stream, precision, buffer, bytes_printed);
+            if (write_rep(stream, padding, SPACES, &bytes_printed)) {
+              return bytes_printed;
+            }
+          } else if (flags & ZERO_FLAG) {
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            if (write_rep(stream, padding, ZEROS, &bytes_printed)) {
+              return bytes_printed;
+            }
+            WRITE_CHECKED(stream, precision, buffer, bytes_printed);
+          } else {
+            if (write_rep(stream, padding, SPACES, &bytes_printed)) {
+              return bytes_printed;
+            }
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            WRITE_CHECKED(stream, precision, buffer, bytes_printed);
+          }
+        }
+      } else {
+        for (int idx = 15; idx >= 0; idx--) {
+          buffer[idx] = UPPER_HEX[value & 0xF];
+          value >>= 4;
+        }
+        size_t number_of_zeros = precision - 16;
+        if (min_width <= effective_width) {
+          if (write_rep(stream, number_of_zeros, ZEROS, &bytes_printed)) {
+            return bytes_printed;
+          }
+          WRITE_CHECKED(stream, 16, buffer, bytes_printed);
+        } else {
+          size_t padding = min_width - effective_width;
+          if (flags & MINUS_FLAG) {
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            if (write_rep(stream, number_of_zeros, ZEROS, &bytes_printed)) {
+              return bytes_printed;
+            }
+            WRITE_CHECKED(stream, 16, buffer, bytes_printed);
+            if (write_rep(stream, padding, SPACES, &bytes_printed)) {
+              return bytes_printed;
+            }
+          } else if (flags & ZERO_FLAG) {
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            if (write_rep(stream, number_of_zeros + padding, ZEROS,
+                          &bytes_printed)) {
+              return bytes_printed;
+            }
+            WRITE_CHECKED(stream, 16, buffer, bytes_printed);
+          } else {
+            if (write_rep(stream, padding, SPACES, &bytes_printed)) {
+              return bytes_printed;
+            }
+            if (flags & POUND_FLAG) {
+              WRITE_CHECKED(stream, 2, "0x", bytes_printed);
+            }
+            if (write_rep(stream, number_of_zeros, ZEROS, &bytes_printed)) {
+              return bytes_printed;
+            }
+            WRITE_CHECKED(stream, 16, buffer, bytes_printed);
+          }
+        }
+      }
+      break;
+    default:
+      WRITE_CHECKED(stream, 4, "TODO", bytes_printed);
+    }
+    cursor++;
+    format = cursor;
+  }
+  return bytes_printed;
+}
+
+int fclose(FILE *stream) {
+  stream->close(stream->data);
+  return 0; // TODO: errors
 }
