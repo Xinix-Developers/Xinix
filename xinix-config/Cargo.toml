@@ -1,0 +1,8 @@
+[package]
+name = "xinix-config"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sysname = { git = "https://github.com/chorman0773/uname.git", version = "0.1.0" }
+target-tuples = "0.16.1"

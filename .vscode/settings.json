@@ -1,5 +1,6 @@
 {
     "clangd.arguments": [
         "--compile-commands-dir=${workspaceFolder}"
-    ]
+    ],
+    "rust-analyzer.linkedProjects": ["xinix-config/Cargo.toml"]
 }
