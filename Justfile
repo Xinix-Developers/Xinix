@@ -19,3 +19,6 @@ debug: build
         -m 2G \
         -s -S &
     gdb -x debug.gdb
+
+format:
+    find . -path './externals' -prune -o \( -name '*.c' -o -name '*.h' \) -print -exec clang-format -i {} \;
