@@ -76,7 +76,7 @@ void pkmain(void) {
   }
 
   uint8_t random[16];
-  if (rand_slow_get_enthropy(random) == 0)
+  if (rand_slow_get_entropy(random) == 0)
     *auxtarg++ = (auxv_t){.a_type = AT_RANDOM, .a_un.a_ptr = random};
 
   kmain(1, argv, envp, auxv);
