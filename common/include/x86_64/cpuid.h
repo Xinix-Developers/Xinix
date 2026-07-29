@@ -36,18 +36,20 @@ extern const uint32_t x86_feature_array[];
     _x86_feature_##feat = ((idx << 6) | bit),
 
 enum x86_feature_flags {
-    #include <bits/cpuid_flags.h>
+#include <bits/cpuid_flags.h>
 };
 
 #undef X86_CPUID_DEFINE_FEATURE_ENUM
 
-#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit) \
-    case _x86_feature_##feat: return #feat ;
+#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit)                          \
+    case _x86_feature_##feat:                                                  \
+        return #feat;
 
-static inline const char* x86_get_feature_name(enum x86_feature_flags _flag) {
-    switch(_flag) {
-    #include <bits/cpuid_flags.h>
-    default: return nullptr;
+static inline const char *x86_get_feature_name(enum x86_feature_flags _flag) {
+    switch (_flag) {
+#include <bits/cpuid_flags.h>
+    default:
+        return nullptr;
     }
 }
 

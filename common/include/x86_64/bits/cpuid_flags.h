@@ -1,5 +1,5 @@
 #ifndef X86_CPUID_DEFINE_FEATURE_ENUM
-# error "Do not include this header directly. Include <cpuid.h>"
+#error "Do not include this header directly. Include <cpuid.h>"
 #endif
 
 // cpuid[eax=1].edx
@@ -78,7 +78,8 @@ X86_CPUID_DEFINE_FEATURE_ENUM(smap, 4, 20)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512ifma, 4, 21)
 X86_CPUID_DEFINE_FEATURE_ENUM(clflushopt, 4, 23)
 X86_CPUID_DEFINE_FEATURE_ENUM(clwb, 4, 24)
-// X86_CPUID_DEFINE_FEATURE_ENUM(pt, 4, 25) !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(pt, 4, 25) !Do not uncomment this line without
+// adding xsave state check
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512pf, 4, 26)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512er, 4, 27)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512cd, 4, 28)
@@ -90,10 +91,12 @@ X86_CPUID_DEFINE_FEATURE_ENUM(avx512vl, 4, 31)
 X86_CPUID_DEFINE_FEATURE_ENUM(prefetchwt1, 2, 0)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512vbmi, 2, 1)
 X86_CPUID_DEFINE_FEATURE_ENUM(uimp, 2, 2)
-// X86_CPUID_DEFINE_FEATURE_ENUM(pku, 2, 3) !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(pku, 2, 3) !Do not uncomment this line without
+// adding xsave state check
 X86_CPUID_DEFINE_FEATURE_ENUM(waitpkg, 2, 5)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512vbmi2, 2, 6)
-// X86_CPUID_DEFINE_FEATURE_ENUM(shstk, 2, 7) !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(shstk, 2, 7) !Do not uncomment this line
+// without adding xsave state check
 X86_CPUID_DEFINE_FEATURE_ENUM(gfni, 2, 8)
 X86_CPUID_DEFINE_FEATURE_ENUM(vaes, 2, 9)
 X86_CPUID_DEFINE_FEATURE_ENUM(vpclmulqdq, 2, 10)
@@ -110,14 +113,16 @@ X86_CPUID_DEFINE_FEATURE_ENUM(movdiri, 2, 27)
 X86_CPUID_DEFINE_FEATURE_ENUM(movdir64b, 2, 28)
 X86_CPUID_DEFINE_FEATURE_ENUM(enqcmd, 2, 29)
 X86_CPUID_DEFINE_FEATURE_ENUM(sgx_lc, 2, 30)
-// X86_CPUID_DEFINE_FEATURE_ENUM(pku, 2, 31) !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(pku, 2, 31) !Do not uncomment this line without
+// adding xsave state check
 
 // cpuidx[eax=7,ecx=0].edx
 X86_CPUID_DEFINE_FEATURE_ENUM(agx_keys, 3, 1)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512_4vnniw, 3, 2)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512_4fmaps, 3, 3)
 X86_CPUID_DEFINE_FEATURE_ENUM(fsrm, 3, 4)
-// X86_CPUID_DEFINE_FEATURE_ENUM(uintr, 3, 5)  !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(uintr, 3, 5)  !Do not uncomment this line
+// without adding xsave state check
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512vp2intersect, 3, 8)
 X86_CPUID_DEFINE_FEATURE_ENUM(srbds_ctrl, 3, 9)
 X86_CPUID_DEFINE_FEATURE_ENUM(md_clear, 3, 10)
@@ -125,7 +130,8 @@ X86_CPUID_DEFINE_FEATURE_ENUM(rtm_force_abort, 3, 13)
 X86_CPUID_DEFINE_FEATURE_ENUM(serialize, 3, 14)
 X86_CPUID_DEFINE_FEATURE_ENUM(tsxldtrk, 3, 16)
 X86_CPUID_DEFINE_FEATURE_ENUM(pconfig, 3, 18)
-// X86_CPUID_DEFINE_FEATURE_ENUM(lbr, 3, 19) !Do not uncomment this line without adding xsave state check
+// X86_CPUID_DEFINE_FEATURE_ENUM(lbr, 3, 19) !Do not uncomment this line without
+// adding xsave state check
 X86_CPUID_DEFINE_FEATURE_ENUM(cet_ibt, 3, 20)
 X86_CPUID_DEFINE_FEATURE_ENUM(amx_bf16, 3, 22)
 X86_CPUID_DEFINE_FEATURE_ENUM(avx512fp16, 3, 23)
@@ -230,7 +236,6 @@ X86_CPUID_DEFINE_FEATURE_ENUM(dbx, 13, 26)
 X86_CPUID_DEFINE_FEATURE_ENUM(perftsc, 13, 27)
 X86_CPUID_DEFINE_FEATURE_ENUM(monitrox, 13, 29)
 X86_CPUID_DEFINE_FEATURE_ENUM(addr_mask_ext, 13, 30)
-
 
 // cpuid[eax=0x0D,ecx=1].eax
 X86_CPUID_DEFINE_FEATURE_ENUM(xsaveopt, 34, 0)
