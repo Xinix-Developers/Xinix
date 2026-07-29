@@ -13,54 +13,54 @@
 // DO NOT remove or rename these functions, or stuff will eventually break!
 
 void *memcpy(void *restrict dest, const void *restrict src, size_t n) {
-  uint8_t *restrict pdest = dest;
-  const uint8_t *restrict psrc = src;
+    uint8_t *restrict pdest = dest;
+    const uint8_t *restrict psrc = src;
 
-  for (size_t i = 0; i < n; i++) {
-    pdest[i] = psrc[i];
-  }
+    for (size_t i = 0; i < n; i++) {
+        pdest[i] = psrc[i];
+    }
 
-  return dest;
+    return dest;
 }
 
 void *memset(void *s, int c, size_t n) {
-  uint8_t *p = s;
+    uint8_t *p = s;
 
-  for (size_t i = 0; i < n; i++) {
-    p[i] = (uint8_t)c;
-  }
+    for (size_t i = 0; i < n; i++) {
+        p[i] = (uint8_t)c;
+    }
 
-  return s;
+    return s;
 }
 
 void *memmove(void *dest, const void *src, size_t n) {
-  uint8_t *pdest = dest;
-  const uint8_t *psrc = src;
+    uint8_t *pdest = dest;
+    const uint8_t *psrc = src;
 
-  if ((uintptr_t)src > (uintptr_t)dest) {
-    for (size_t i = 0; i < n; i++) {
-      pdest[i] = psrc[i];
+    if ((uintptr_t)src > (uintptr_t)dest) {
+        for (size_t i = 0; i < n; i++) {
+            pdest[i] = psrc[i];
+        }
+    } else if ((uintptr_t)src < (uintptr_t)dest) {
+        for (size_t i = n; i > 0; i--) {
+            pdest[i - 1] = psrc[i - 1];
+        }
     }
-  } else if ((uintptr_t)src < (uintptr_t)dest) {
-    for (size_t i = n; i > 0; i--) {
-      pdest[i - 1] = psrc[i - 1];
-    }
-  }
 
-  return dest;
+    return dest;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-  const uint8_t *p1 = s1;
-  const uint8_t *p2 = s2;
+    const uint8_t *p1 = s1;
+    const uint8_t *p2 = s2;
 
-  for (size_t i = 0; i < n; i++) {
-    if (p1[i] != p2[i]) {
-      return p1[i] < p2[i] ? -1 : 1;
+    for (size_t i = 0; i < n; i++) {
+        if (p1[i] != p2[i]) {
+            return p1[i] < p2[i] ? -1 : 1;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
 // end copied code
@@ -71,28 +71,28 @@ char bump_heap[BUMP_HEAP_SIZE] = {};
 size_t bump_heap_ptr = 0;
 
 void *malloc(size_t size) {
-  if (BUMP_HEAP_SIZE - bump_heap_ptr < size) {
-    return nullptr;
-  } else {
-    void *result = &bump_heap[bump_heap_ptr];
-    size_t align = sizeof(max_align_t);
-    bump_heap_ptr += (size + align - 1) / align * align;
-    return result;
-  }
+    if (BUMP_HEAP_SIZE - bump_heap_ptr < size) {
+        return nullptr;
+    } else {
+        void *result = &bump_heap[bump_heap_ptr];
+        size_t align = sizeof(max_align_t);
+        bump_heap_ptr += (size + align - 1) / align * align;
+        return result;
+    }
 }
 
 void *calloc(size_t num, size_t size) {
-  void *ptr = nullptr;
-  if ((num != 0) && (size != 0) && ((SIZE_MAX / num) >= size)) {
-    ptr = malloc((num * size));
-    if (ptr == nullptr) {
-      return ptr;
+    void *ptr = nullptr;
+    if ((num != 0) && (size != 0) && ((SIZE_MAX / num) >= size)) {
+        ptr = malloc((num * size));
+        if (ptr == nullptr) {
+            return ptr;
+        }
+        ptr = memset(ptr, 0, num * size);
+        return ptr;
     }
-    ptr = memset(ptr, 0, num * size);
-    return ptr;
-  }
 
-  return ptr;
+    return ptr;
 }
 
 void free(void *_ptr) { return; }

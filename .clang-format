@@ -1,3 +1,5 @@
 BreakAfterAttributes: "Always"
+IndentWidth: 4
 InsertNewlineAtEOF: true
 TabWidth: 4
+UseTab: Never

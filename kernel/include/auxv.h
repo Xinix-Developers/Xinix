@@ -4,12 +4,12 @@
 #include <stddef.h>
 
 typedef struct {
-  unsigned long a_type;
-  union auxval_t {
-    long a_val;
-    void *a_ptr;
-    void (*a_fnc)();
-  } a_un;
+    unsigned long a_type;
+    union auxval_t {
+        long a_val;
+        void *a_ptr;
+        void (*a_fnc)();
+    } a_un;
 } auxv_t;
 
 // a_type values

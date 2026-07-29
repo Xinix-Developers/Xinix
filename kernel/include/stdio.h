@@ -4,11 +4,11 @@
 #include <stddef.h>
 
 typedef struct FILE {
-  int flags; // TODO
-  void *data;
-  size_t (*write)(void *data, size_t len, const char *bytes);
-  size_t (*read)(void *data, size_t len, char *bytes);
-  void (*close)(void *data);
+    int flags; // TODO
+    void *data;
+    size_t (*write)(void *data, size_t len, const char *bytes);
+    size_t (*read)(void *data, size_t len, char *bytes);
+    void (*close)(void *data);
 } FILE;
 
 extern FILE *stdout;
