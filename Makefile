@@ -8,7 +8,7 @@ ARCH := x86_64
 limine_bios_files := limine-bios.sys limine-bios-cd.bin limine-uefi-cd.bin
 limine_efi_boot_files := BOOTX64.EFI BOOTIA32.EFI
 
-all: iso
+all: iso | .env_check
 
 clean:
 	rm -rf target/iso-root
@@ -24,7 +24,9 @@ clobber: clean
 	make -C externals/flanterm-build clobber
 	make -C kernel clobber
 
-iso: kernel limine limine.conf
+iso: target/$(IMAGE_NAME).iso | .env_check
+
+target/$(IMAGE_NAME).iso: kernel externals/limine-binary/limine limine.conf | .env_check
 	rm -rf target/iso-root
 	mkdir -p target/iso-root/boot/limine
 	cp -v kernel/target/kernel target/iso-root/boot/
@@ -39,11 +41,19 @@ iso: kernel limine limine.conf
 	externals/limine-binary/limine bios-install target/$(IMAGE_NAME).iso
 	rm -rf target/iso-root
 
-kernel:
+kernel: | .env_check
 	make -C loader EXTERNALS=$(EXTERNALS) ARCH=$(ARCH)
 	make -C prekernel EXTERNALS=$(EXTERNALS) ARCH=$(ARCH)
 	make -C externals/flanterm-build
 	make -C kernel EXTERNALS=$(EXTERNALS) LDSCRIPT=$(shell realpath ./prekernel/target/link.ld) PREKERNEL=$(shell realpath ./prekernel/target/prekernel.a) ARCH=$(ARCH)
 
-limine:
+limine: externals/limine-binary/limine | .env_check
+
+externals/limine-binary/limine: | .env_check
 	make -C externals/limine-binary
+
+.env_check: REQUIREMENTS.md
+	cargo --version
+	clang --version
+	find --version
+	touch .env_check
