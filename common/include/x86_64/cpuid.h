@@ -14,12 +14,12 @@
 /// * [6]: cpuid[eax=7,ecx=1].ecx
 /// * [7]: cpuid[eax=7,ecx=1].edx
 /// * [8]: cpuid[eax=7,ecx=1].ebx
-/// * [9]: cpuid[eax=7,ecx=2].eax
-/// * [10]: cpuid[eax=7,ecx=2].ecx
+/// * [9]: reserved
+/// * [10]: reserved
 /// * [11]: cpuid[eax=7,ecx=2].edx
-/// * [12]: cpuid[eax=7,ecx=2].ebx
-/// * [13]: cpuid[eax=0x80000001].ecx (only non-redundant features)
-/// * [14]: cpuid[eax=0x80000001].edx
+/// * [12]: reserved
+/// * [13]: cpuid[eax=0x80000001].ecx
+/// * [14]: cpuid[eax=0x80000001].edx (only non-redundant features)
 /// * [15]:  reserved
 /// * [16]: cpuid[eax=0x24,ecx=0].ebx
 /// * [17]: cpuid[eax=0x24,ecx=1].ecx
@@ -33,13 +33,23 @@
 extern const uint32_t x86_feature_array[];
 
 #define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit)                          \
-    _feature_##feat = ((idx << 6) | bit)
+    _x86_feature_##feat = ((idx << 6) | bit),
 
 enum x86_feature_flags {
-    X86_CPUID_DEFINE_FEATURE_ENUM(x87, 1, 0),
-    X86_CPUID_DEFINE_FEATURE_ENUM(rdrand, 0, 30),
-    X86_CPUID_DEFINE_FEATURE_ENUM(rdseed, 4, 18),
+    #include <bits/cpuid_flags.h>
 };
+
+#undef X86_CPUID_DEFINE_FEATURE_ENUM
+
+#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit) \
+    case _x86_feature_##feat: return #feat ;
+
+static inline const char* x86_get_feature_name(enum x86_feature_flags _flag) {
+    switch(_flag) {
+    #include <bits/cpuid_flags.h>
+    default: return nullptr;
+    }
+}
 
 #undef X86_CPUID_DEFINE_FEATURE_ENUM
 
@@ -54,4 +64,4 @@ _is_x86_feature_detected(enum x86_feature_flags _flag) _ATTRIBUTE_UNSEQ {
 
 #define is_x86_feature_detected(feature)                                       \
     (is_x86_feature_enabled(feature) ||                                        \
-     (_is_x86_feature_detected(_feature_##feature)))
+     (_is_x86_feature_detected(_x86_feature_##feature)))
