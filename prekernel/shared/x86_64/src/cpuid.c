@@ -58,8 +58,6 @@ void init_cpu_feature_array(void) {
     auto eax7_ecx1 = cpuid_count(7, 1);
     auto eax7_ecx2 = cpuid_count(7, 2);
     auto eax8000_0001 = cpuid(0x8000'0001);
-    auto eax0D_ecx0 = cpuid_count(0x0D, 0);
-    auto eax0D_ecx1 = cpuid_count(0x0D, 1);
 
     x86_feature_array[0] = eax1.ecx;
     x86_feature_array[1] = eax1.edx;
@@ -74,20 +72,29 @@ void init_cpu_feature_array(void) {
     x86_feature_array[13] = eax8000_0001.ecx;
     x86_feature_array[14] = eax8000_0001.edx & ~0x0183F3FF;
 
-    x86_feature_array[32] = eax0D_ecx0.eax;
-    x86_feature_array[33] = eax0D_ecx0.edx;
-    x86_feature_array[34] = eax0D_ecx1.eax;
-    x86_feature_array[36] = eax0D_ecx1.ecx;
-    x86_feature_array[37] = eax0D_ecx1.edx;
-
     bool has_xsave = eax1.ecx & (1 << 26);
 
-    bool has_avx = has_xsave && (eax0D_ecx0.eax & (1 << 2));
-    bool has_avx512 =
-        has_xsave && (eax0D_ecx0.eax & (0b111 << 5)) == (0b111 << 5);
+    bool has_avx = false;
+    bool has_avx512 = false;
+
+    bool has_amx = false;
+    bool has_apx = false;
+
+    if (has_xsave) {
+        auto eax0D_ecx0 = cpuid_count(0x0D, 0);
+        auto eax0D_ecx1 = cpuid_count(0x0D, 1);
+        x86_feature_array[32] = eax0D_ecx0.eax;
+        x86_feature_array[33] = eax0D_ecx0.edx;
+        x86_feature_array[34] = eax0D_ecx1.eax;
+        x86_feature_array[36] = eax0D_ecx1.ecx;
+        x86_feature_array[37] = eax0D_ecx1.edx;
+        has_avx = (eax0D_ecx0.eax & (1 << 2));
+        has_avx512 = (eax0D_ecx0.eax & (0b111 << 5)) == (0b111 << 5);
+        has_amx = (eax0D_ecx0.eax & (0b11 << 17)) == (0b11 << 17);
+        has_apx = (eax0D_ecx0.eax & (1 << 19));
+    }
+
     bool has_avx10 = has_avx512 && (eax7_ecx1.edx & (1 << 19));
-    bool has_amx = has_xsave && (eax0D_ecx0.eax & (0b11 << 17)) == (0b11 << 17);
-    bool has_apx = has_xsave && (eax0D_ecx0.eax & (1 << 19));
 
     for (size_t i = 0; i < 16; i++) {
         if (!has_avx)
