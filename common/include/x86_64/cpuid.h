@@ -35,7 +35,7 @@ extern const uint32_t x86_feature_array[];
 #define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit)                          \
     _x86_feature_##feat = ((idx << 5) | bit),
 
-enum x86_feature_flags {
+enum x86_feature_flag {
 #include <bits/cpuid_flags.h>
 };
 
@@ -45,7 +45,7 @@ enum x86_feature_flags {
     case _x86_feature_##feat:                                                  \
         return #feat;
 
-static inline const char *x86_get_feature_name(enum x86_feature_flags _flag) {
+static inline const char *x86_get_feature_name(enum x86_feature_flag _flag) {
     switch (_flag) {
 #include <bits/cpuid_flags.h>
     default:
@@ -60,10 +60,20 @@ static inline const char *x86_get_feature_name(enum x86_feature_flags _flag) {
         // out feature checks
 
 static inline bool
-_is_x86_feature_detected(enum x86_feature_flags _flag) _ATTRIBUTE_UNSEQ {
+_is_x86_feature_detected(enum x86_feature_flag _flag) _ATTRIBUTE_UNSEQ {
     return x86_feature_array[_flag >> 5] & (1 << (_flag & 31));
 }
 
 #define is_x86_feature_detected(feature)                                       \
     (is_x86_feature_enabled(feature) ||                                        \
      (_is_x86_feature_detected(_x86_feature_##feature)))
+
+
+#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit) \
+            if(is_x86_feature_detected(feat)) (_callback)(_udata, _x86_feature_##feat);
+
+static inline void x86_enumerate_supported_features(void(*_callback)(void*, enum x86_feature_flag _flag), void* _udata) {
+#include <bits/cpuid_flags.h>
+}
+
+#undef X86_CPUID_DEFINE_FEATURE_ENUM
