@@ -68,11 +68,12 @@ _is_x86_feature_detected(enum x86_feature_flag _flag) _ATTRIBUTE_UNSEQ {
     (is_x86_feature_enabled(feature) ||                                        \
      (_is_x86_feature_detected(_x86_feature_##feature)))
 
+#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit)                          \
+    if (is_x86_feature_detected(feat))                                         \
+        (_callback)(_udata, _x86_feature_##feat);
 
-#define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit) \
-            if(is_x86_feature_detected(feat)) (_callback)(_udata, _x86_feature_##feat);
-
-static inline void x86_enumerate_supported_features(void(*_callback)(void*, enum x86_feature_flag _flag), void* _udata) {
+static inline void x86_enumerate_supported_features(
+    void (*_callback)(void *, enum x86_feature_flag _flag), void *_udata) {
 #include <bits/cpuid_flags.h>
 }
 
