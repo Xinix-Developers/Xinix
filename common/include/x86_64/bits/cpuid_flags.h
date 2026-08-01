@@ -1,4 +1,4 @@
-// #pragma once initially omitted
+// #pragma once intentionally omitted
 #ifndef X86_CPUID_DEFINE_FEATURE_ENUM
 #error Do not include this header directly. Include <cpuid.h>
 #endif

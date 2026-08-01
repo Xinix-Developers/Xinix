@@ -1,4 +1,4 @@
-// #pragma once initially omitted
+// #pragma once intentionally omitted
 
 #include <stdint.h>
 
