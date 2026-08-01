@@ -33,7 +33,7 @@
 extern const uint32_t x86_feature_array[];
 
 #define X86_CPUID_DEFINE_FEATURE_ENUM(feat, idx, bit)                          \
-    _x86_feature_##feat = ((idx << 6) | bit),
+    _x86_feature_##feat = ((idx << 5) | bit),
 
 enum x86_feature_flags {
 #include <bits/cpuid_flags.h>

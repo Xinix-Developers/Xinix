@@ -1,5 +1,6 @@
+// #pragma once initially omitted
 #ifndef X86_CPUID_DEFINE_FEATURE_ENUM
-#error "Do not include this header directly. Include <cpuid.h>"
+#error Do not include this header directly. Include <cpuid.h>
 #endif
 
 // cpuid[eax=1].edx

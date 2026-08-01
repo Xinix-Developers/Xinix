@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #ifndef XINIX_ELF_H_WANT_RELOCATIONS
-#error "Cannot include this file directly, include <elf.h> instead"
+#error Cannot include this file directly, include <elf.h> instead
 #endif
 
 enum X86_64_Reloc : uint32_t {
