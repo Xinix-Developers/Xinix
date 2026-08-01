@@ -10,3 +10,5 @@ int memcmp(const void *lhs, const void *rhs, size_t count);
 void *malloc(size_t size);
 void *calloc(size_t num, size_t size);
 void free(void *ptr);
+
+size_t strlen(const char *str);

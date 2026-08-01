@@ -96,3 +96,13 @@ void *calloc(size_t num, size_t size) {
 }
 
 void free(void *_ptr) { return; }
+
+// strlen because that's useful
+
+size_t strlen(const char *str) {
+    size_t result = 0;
+    while (*str++ != 0) {
+        result += 1;
+    }
+    return result;
+}

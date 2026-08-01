@@ -1,3 +1,4 @@
+#include "cpuid.h"
 #include <auxv.h>
 #include <framebuffer.h>
 #include <memory.h>
@@ -26,6 +27,17 @@ size_t stdout_handler(void *data, size_t len, const char *bytes) {
     struct flanterm_context *ft_ctx = data;
     flanterm_write(ft_ctx, bytes, len);
     return len;
+}
+
+void print_feature_flag(void *v_want_comma, enum x86_feature_flag flag) {
+    bool *want_comma = (bool *)v_want_comma;
+    const char *name = x86_get_feature_name(flag);
+    if (*want_comma) {
+        printf(", %s", name);
+    } else {
+        printf("%s", name);
+    }
+    *want_comma = true;
 }
 
 [[noreturn]]
@@ -77,6 +89,11 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
     stdout->write = stdout_handler;
 
     printf("Address of printf is %#.16X\r\n", printf);
+
+    printf("Feature flags: ");
+    bool want_comma = false;
+    x86_enumerate_supported_features(print_feature_flag, &want_comma);
+    printf("\r\n");
 
     hcf();
 }
