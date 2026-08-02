@@ -27,10 +27,13 @@ override LDFLAGS += \
 override LIBS = $(PREKERNEL) $(EXTERNALS)/flanterm-build/target/flanterm.a
 
 CC := clang
+LD := ld.lld
 
-srcfiles := $(patsubst src/%,%,$(shell find src -type f -name '*.c'))
-objs := $(srcfiles:%.c=target/%.o)
-depfiles := $(srcfiles:%.c=target/%.d)
+srcdirs := src/common src/$(ARCH)
+srcfiles_c := $(patsubst src/%,%,$(shell find $(srcdirs) -type f -name '*.c'))
+srcfiles_asm := $(patsubst src/%,%,$(shell find $(srcdirs) -type f -name '*.S' ))
+objs := $(srcfiles_c:%.c=target/%.o) $(srcfiles_asm:%.S=target/%.o)
+depfiles := $(srcfiles_c:%.c=target/%.d) $(srcfiles_asm:%.S=target/%.d)
 output := target/kernel
 
 all: $(output)
@@ -47,5 +50,9 @@ target/kernel: $(objs)
 	$(LD) $(LDFLAGS) -o $@ $(objs) $(LIBS)
 
 target/%.o: src/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+target/%.o: src/%.S
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<

@@ -10,7 +10,7 @@
 [[noreturn]]
 static void hcf(void) {
     for (;;) {
-        __asm__("hlt");
+        __asm__ volatile("hlt");
     }
 }
 
@@ -40,6 +40,62 @@ void print_feature_flag(void *v_want_comma, enum x86_feature_flag flag) {
     *want_comma = true;
 }
 
+// TODO: This is x86-64 specific. This should be moved.
+typedef struct IDT_Entry {
+    _Alignas(16) uint16_t offset_low;
+    uint16_t segment;
+    uint8_t ist;
+    uint8_t type_and_perms;
+    uint16_t offset_mid;
+    uint32_t offset_high;
+    uint32_t reserved;
+} idt_entry_t;
+
+typedef struct IDT {
+    idt_entry_t entries[256];
+} idt_t;
+
+typedef struct [[gnu::packed]] IDT_Descriptor {
+    uint16_t limit;
+    idt_t *idt;
+} idt_descriptor_t;
+
+extern idt_t IDT;
+extern uintptr_t isr_list[256];
+
+void load_idt() {
+    for (int i = 0; i < 256; i++) {
+        IDT.entries[i].offset_low = isr_list[i] & 0xFFFF;
+        IDT.entries[i].offset_mid = (isr_list[i] >> 16) & 0xFFFF;
+        IDT.entries[i].offset_high = isr_list[i] >> 32;
+    }
+    idt_descriptor_t descriptor = {
+        .limit = 255 * 16,
+        .idt = &IDT,
+    };
+    __asm__ volatile("lidt %0" ::"m"(descriptor));
+}
+
+struct stack_frame {
+    size_t rax;
+    // TODO
+};
+
+[[gnu::used]]
+void handle_int(struct stack_frame *frame, int irq) {
+    printf("Got Interrupt %X\r\n", irq);
+}
+
+struct stack_frame_with_code {
+    size_t rax;
+    // TODO
+};
+
+[[gnu::used]]
+void handle_int_with_code(struct stack_frame *frame, int irq) {
+    printf("Got Interrupt %X\r\n", irq);
+}
+
 [[noreturn]]
 extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
     framebuffer *fb;
@@ -50,6 +106,8 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
     }
 
     fb = (framebuffer *)getauxval(AT_KXINIX_FRAMEBUFFER).a_ptr;
+
+    load_idt();
 
     video_mode *fb_mode = fb->modes[0];
     // Pick the highest-resolution mode we can find that flanterm will
@@ -108,13 +166,16 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
 
     printf("Feature array:");
     for (int i = 0; i < 38; i++) {
-        if(i&7)
+        if (i & 7)
             printf(" ");
         else
             printf("\r\n");
         printf("%08X", x86_feature_array[i]);
     }
     printf("\r\n");
+
+    // Test IDT
+    *((volatile int*) nullptr) = 0;
 
     hcf();
 }
