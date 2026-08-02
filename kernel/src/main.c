@@ -68,13 +68,24 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
         }
     }
 
+    // clang-format off
     struct flanterm_context *ft_ctx = flanterm_fb_init(
-        nullptr, nullptr, fb->address, fb_mode->width, fb_mode->height,
-        fb_mode->pitch, fb_mode->red_mask_size, fb_mode->red_mask_shift,
+        nullptr, // malloc (unused in current configuration)
+        nullptr, // free (unused in current configuration)
+        fb->address, fb_mode->width, fb_mode->height, fb_mode->pitch,
+        fb_mode->red_mask_size, fb_mode->red_mask_shift,
         fb_mode->green_mask_size, fb_mode->green_mask_shift,
-        fb_mode->blue_mask_size, fb_mode->blue_mask_shift, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, 0, 0, 1, 0, 0, 0,
-        0);
+        fb_mode->blue_mask_size, fb_mode->blue_mask_shift,
+        nullptr, // background image (currently unused)
+        nullptr, nullptr, // ANSI color config (using default)
+        nullptr, nullptr, // default foreground/background colors (using default)
+        nullptr, nullptr, // default bright foreground/background color (using default)
+        nullptr, 0, 0, 1, // font and options (using default)
+        0, 0, // font scale settings (using default)
+        0, // margin (currently using no margin; may change)
+        0 // rotation (don't rotate)
+    );
+    // clang-format on
 
     const char msg[] =
         "Xinix Version 0.0.0\r\n(that's right, even less than 0.0.1)\r\n\r\n";
