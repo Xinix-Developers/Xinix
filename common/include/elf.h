@@ -91,10 +91,30 @@ typedef int16_t Elf64_Shalf;
 typedef int32_t Elf64_Sword;
 typedef int64_t Elf64_Sxword;
 
+enum Elf_Machine : uint16_t {
+    EM_386 = 3,
+    EM_X86_64 = 62,
+#define ELF_WANT_NATIVE_MACHINE
+#include <bits/elf_native.h>
+#undef ELF_WANT_NATIVE_MACHINE
+};
+
+enum Elf_Type : uint16_t {
+    ET_NONE = 0,
+    ET_REL = 1,
+    ET_EXEC = 2,
+    ET_DYN = 3,
+    ET_CORE = 4,
+    ET_LOOS = 0xfe00,
+    ET_HIOS = 0xfeff,
+    ET_LOPROC = 0xff00,
+    ET_HIPROC = 0xffff,
+};
+
 typedef struct {
     Elf_Ident e_ident;
-    uint16_t e_type;
-    uint16_t e_machine;
+    enum Elf_Type e_type;
+    enum Elf_Machine e_machine;
     uint32_t e_version;
     Elf64_Addr e_entry;
     Elf64_Off e_phoff;
@@ -205,9 +225,17 @@ enum Elf_PhType : uint32_t {
     PT_HIPROC = 0x7fffffff,
 };
 
+enum Elf_PhFlags : uint32_t {
+    PF_X = 0x01,
+    PF_W = 0x02,
+    PF_R = 0x04,
+    PF_MASKOS = 0x0FF00000,
+    PF_MASKPROC = 0xF0000000,
+};
+
 typedef struct {
-    Elf64_Word p_type;
-    Elf64_Word p_flags;
+    enum Elf_PhType p_type;
+    enum Elf_PhFlags p_flags;
     Elf64_Off p_offset;
     Elf64_Addr p_vaddr;
     Elf64_Addr p_paddr;
@@ -268,4 +296,9 @@ typedef struct {
 
 #if INTPTR_WIDTH == 64
 typedef Elf64_Dyn ElfNative_Dyn;
+typedef Elf64_Ehdr ElfNative_Ehdr;
+typedef Elf64_Phdr ElfNative_Phdr;
+typedef Elf64_Sym ElfNative_Sym;
+typedef Elf64_Rela ElfNative_Rela;
+typedef Elf64_Rel ElfNative_Rel;
 #endif

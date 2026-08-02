@@ -2,7 +2,13 @@
 
 #include <stddef.h>
 
-typedef long sysresult_t;
+
+typedef enum : long {
+    ERR_GENERIC = -1,
+
+
+    ERR_IMAGE_WX_SEG = -36,
+} sysresult_t;
 
 #if __has_include(<bits/sysresult2_def.h>)
 #include <bits/sysresult2_def.h>
