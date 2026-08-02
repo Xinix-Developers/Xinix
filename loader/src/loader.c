@@ -8,19 +8,18 @@
 #include <string.h>
 #include <cmp.h>
 
+#include <got.h>
+
 #include <sysresult.h>
 
 extern ElfNative_Dyn _DYNAMIC[];
 
-union GotEntry {
-    void *address;
-    uintptr_t value;
-};
+
 
 extern union GotEntry _GLOBAL_OFFSET_TABLE_[];
 
 void *image_base_addr(void) {
-    return (void *)((uintptr_t)(&_DYNAMIC) - _GLOBAL_OFFSET_TABLE_[0].value);
+    return (void *)((uintptr_t)(&_DYNAMIC) - _GLOBAL_OFFSET_TABLE_[0].got_value);
 }
 
 sysresult2_t loader_map_elf(const ElfNative_Ehdr *e_hdr, ElfNative_Dyn** dyn_out, ElfNative_Phdr** phdr_out) {
