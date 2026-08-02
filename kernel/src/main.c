@@ -106,17 +106,15 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
     x86_enumerate_supported_features(print_feature_flag, &want_comma);
     printf("\r\n");
 
-    printf("Feature array: [");
-    want_comma = false;
+    printf("Feature array:");
     for (int i = 0; i < 38; i++) {
-        if (want_comma) {
-            printf(", %#.8X", x86_feature_array[i]);
-        } else {
-            printf("%#.8X", x86_feature_array[i]);
-        }
-        want_comma = true;
+        if(i&7)
+            printf(" ");
+        else
+            printf("\r\n");
+        printf("%08X", x86_feature_array[i]);
     }
-    printf("]\r\n");
+    printf("\r\n");
 
     hcf();
 }
