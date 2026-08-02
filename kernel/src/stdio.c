@@ -156,7 +156,8 @@ static long long read_int(int length, int extra, va_list vlist) {
     }
 }
 
-static unsigned long long read_unsigned_int(int length, int extra, va_list vlist) {
+static unsigned long long read_unsigned_int(int length, int extra,
+                                            va_list vlist) {
     switch (length) {
     case LONG_LEN:
         return va_arg(vlist, unsigned long);
