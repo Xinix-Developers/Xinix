@@ -172,10 +172,10 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
             printf("\r\n");
         printf("%08X", x86_feature_array[i]);
     }
-    printf("\r\n");
+    printf("\r\n\r\n");
 
     // Test IDT
-    *((volatile int*) nullptr) = 0;
+    __asm__ volatile("int3");
 
     hcf();
 }

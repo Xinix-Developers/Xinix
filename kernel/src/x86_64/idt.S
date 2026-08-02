@@ -117,7 +117,7 @@ IDT:
 isr_list:
 .align 8
 .set i,0
-.rept 2
+.rept 256
   IsrListEntry %i
   .set i,i+1
 .endr
