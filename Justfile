@@ -11,6 +11,15 @@ run: build
         -boot d \
         -m 2G
 
+run-cpu-host: build
+    qemu-system-x86_64 \
+        -M q35 \
+        -cdrom target/xinix-dev.iso \
+        -boot d \
+        -m 2G \
+        -enable-kvm \
+        -cpu host
+
 debug: build
     qemu-system-x86_64 \
         -M q35 \
