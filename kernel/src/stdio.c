@@ -156,6 +156,45 @@ static long long read_int(int length, int extra, va_list vlist) {
     }
 }
 
+static unsigned long long read_unsigned_int(int length, int extra, va_list vlist) {
+    switch (length) {
+    case LONG_LEN:
+        return va_arg(vlist, unsigned long);
+    case LONG_LONG_LEN:
+        return va_arg(vlist, unsigned long long);
+    case INTMAX_LEN:
+        return va_arg(vlist, uintmax_t);
+    case SIZE_LEN:
+        return va_arg(vlist, size_t);
+    case PTRDIFF_LEN:
+        return va_arg(vlist, uintptr_t);
+    case MINWIDTH_LEN:
+        switch (extra) {
+        case 64:
+            return va_arg(vlist, uint_least64_t);
+        case 8:
+        case 16:
+        case 32:
+        default:
+            return va_arg(vlist, uint_least32_t);
+        }
+    case FAST_LEN:
+        switch (extra) {
+        case 64:
+            return va_arg(vlist, uint_fast64_t);
+        case 8:
+        case 16:
+        case 32:
+        default:
+            return va_arg(vlist, uint_fast32_t);
+        }
+    case HALF_HALF_LEN:
+    case HALF_LEN:
+    default:
+        return va_arg(vlist, unsigned int);
+    }
+}
+
 static const char ZEROS[64] = "0000000000000000"
                               "0000000000000000"
                               "0000000000000000"
@@ -270,6 +309,7 @@ int vfprintf(FILE *restrict stream, const char *restrict format,
             cursor++;
             if (*cursor == 'h') {
                 length_spec = HALF_HALF_LEN;
+                cursor++;
             }
             break;
         case 'l':
@@ -277,6 +317,7 @@ int vfprintf(FILE *restrict stream, const char *restrict format,
             cursor++;
             if (*cursor == 'l') {
                 length_spec = LONG_LONG_LEN;
+                cursor++;
             }
             break;
         case 'j':
@@ -327,7 +368,7 @@ int vfprintf(FILE *restrict stream, const char *restrict format,
         switch (*cursor) {
         case 'X':
             unsigned long long value =
-                read_int(length_spec, length_extra, vlist);
+                read_unsigned_int(length_spec, length_extra, vlist);
             if (precision == -1) {
                 precision = 1;
             }

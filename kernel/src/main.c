@@ -99,12 +99,24 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
     stdout->data = ft_ctx;
     stdout->write = stdout_handler;
 
-    printf("Address of printf is %#.16X\r\n", printf);
+    printf("Address of printf is %#.16llX\r\n\r\n", printf);
 
     printf("Feature flags: ");
     bool want_comma = false;
     x86_enumerate_supported_features(print_feature_flag, &want_comma);
     printf("\r\n");
+
+    printf("Feature array: [");
+    want_comma = false;
+    for (int i = 0; i < 38; i++) {
+        if (want_comma) {
+            printf(", %#.8X", x86_feature_array[i]);
+        } else {
+            printf("%#.8X", x86_feature_array[i]);
+        }
+        want_comma = true;
+    }
+    printf("]\r\n");
 
     hcf();
 }
