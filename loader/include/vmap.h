@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum valloc_flags : uint32_t {
     PROT_NONE = 0,
@@ -12,6 +12,6 @@ enum valloc_flags : uint32_t {
     FLAG_UNINIT_MEM = 0x20,
 };
 
-void* valloc(size_t _page_count, enum valloc_flags _flags);
+void *valloc(size_t _page_count, enum valloc_flags _flags);
 
-void* vprotect(void* _base, size_t _page_count, enum valloc_flags _prot_flags);
+void *vprotect(void *_base, size_t _page_count, enum valloc_flags _prot_flags);

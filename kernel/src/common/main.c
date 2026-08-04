@@ -1,6 +1,7 @@
 #include "cpuid.h"
 #include <auxv.h>
 #include <framebuffer.h>
+#include <memmap.h>
 #include <memory.h>
 #include <stdio.h>
 
@@ -176,6 +177,17 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
 
     // Test IDT
     __asm__ volatile("int3");
+
+    printf("\r\n");
+
+    // Print physical memory layout
+    printf("Physical memory:\r\n");
+    memmap *memory_map = getauxval(AT_KXINIX_MEMMAP).a_ptr;
+    for (int i = 0; i < memory_map->entry_count; i++) {
+        printf("%#.16llX--%#.16llX => %s\r\n", memory_map->entries[i].base,
+               memory_map->entries[i].base - 1 + memory_map->entries[i].length,
+               memmap_type_name(memory_map->entries[i].type));
+    }
 
     hcf();
 }

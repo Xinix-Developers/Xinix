@@ -2,10 +2,8 @@
 
 #include <stddef.h>
 
-
 typedef enum : long {
     ERR_GENERIC = -1,
-
 
     ERR_IMAGE_WX_SEG = -36,
 } sysresult_t;

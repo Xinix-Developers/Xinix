@@ -31,6 +31,7 @@ typedef struct {
 #define AT_KXINIX_XSDT 97        // XSDT
 #define AT_KXINIX_BOOTP_GUID 98  // Boot parition GUID (GPT labeled disk)
 #define AT_KXINIX_BOOTP_MBR 99   // Boot partion MBR label
+#define AT_KXINIX_MEMMAP 100     // Boot memory map
 
 #define AT_XINIX_MAX_KERNEL 127 // Max value of a_type entry passed to kernel
 
