@@ -130,6 +130,8 @@ void pkmain(void) {
     // *** NOTE: HERE BE DRAGONS. THIS MUST BE LAST, OR ELSE THE KERNEL WILL ***
     // *** BE TOLD SOME MEMORY IS USABLE THAT DEFINITELY IS NOT.             ***
 
+    __asm__ volatile("" ::: "memory");
+
     // one extra for the memory the bump alloc claimed
     memmap_entry *entries = bump_alloc(
         sizeof(memmap_entry) * (memmap_request.response->entry_count + 1));
