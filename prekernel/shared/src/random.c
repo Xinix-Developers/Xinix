@@ -12,6 +12,11 @@ int rand_init(random_generator *restrict _gen) {
     return 0;
 }
 
+void rand_injest(random_generator *restrict _gen, const uint8_t  _entropy[static restrict 16]) {
+    sha3_absorb(&_gen->_state, _entropy, 16);
+    sha3_permute(&_gen->_state);
+}
+
 void rand_poll(random_generator *restrict _gen,
                uint8_t _output[static restrict 16]) {
     sha3_squeeze(&_gen->_state, _output, 128);
