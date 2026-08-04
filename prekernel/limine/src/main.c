@@ -159,5 +159,8 @@ void pkmain(void) {
                   .entries = entries};
     *auxtarg++ = (auxv_t){.a_type = AT_KXINIX_MEMMAP, .a_un.a_ptr = &map};
 
+    *auxtarg++ = (auxv_t){.a_type = AT_KXINIT_HHDM_OFFSET,
+                          .a_un.a_val = hhdm_request.response->offset};
+
     kmain(1, argv, envp, auxv);
 }

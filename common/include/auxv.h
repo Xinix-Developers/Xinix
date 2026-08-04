@@ -27,11 +27,12 @@ typedef struct {
 #define AT_XINIX_MAX_USER 95 // Max val of a_type entry for a userspace program
 
 // Xinix Kernel region begins at 96
-#define AT_KXINIX_FRAMEBUFFER 96 // framebuffer structure
-#define AT_KXINIX_XSDT 97        // XSDT
-#define AT_KXINIX_BOOTP_GUID 98  // Boot parition GUID (GPT labeled disk)
-#define AT_KXINIX_BOOTP_MBR 99   // Boot partion MBR label
-#define AT_KXINIX_MEMMAP 100     // Boot memory map
+#define AT_KXINIX_FRAMEBUFFER 96  // framebuffer structure
+#define AT_KXINIX_XSDT 97         // XSDT
+#define AT_KXINIX_BOOTP_GUID 98   // Boot parition GUID (GPT labeled disk)
+#define AT_KXINIX_BOOTP_MBR 99    // Boot partion MBR label
+#define AT_KXINIX_MEMMAP 100      // Boot memory map
+#define AT_KXINIT_HHDM_OFFSET 101 // HHDM offset
 
 #define AT_XINIX_MAX_KERNEL 127 // Max value of a_type entry passed to kernel
 
