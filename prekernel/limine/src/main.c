@@ -31,6 +31,12 @@ static volatile struct limine_hhdm_request hhdm_request = {
     .revision = 0,
 };
 
+[[gnu::used, gnu::section(".limine_requests")]]
+static volatile struct limine_rsdp_request rsdp_request = {
+    .id = LIMINE_RSDP_REQUEST_ID,
+    .revision = 0,
+};
+
 [[gnu::used, gnu::section(".limine_requests_start")]]
 static volatile uint64_t limine_requests_start_marker[] =
     LIMINE_REQUESTS_START_MARKER;
@@ -161,8 +167,30 @@ void pkmain(void) {
                   .entries = entries};
     *auxtarg++ = (auxv_t){.a_type = AT_KXINIX_MEMMAP, .a_un.a_ptr = &map};
 
-    *auxtarg++ = (auxv_t){.a_type = AT_KXINIT_HHDM_OFFSET,
-                          .a_un.a_val = hhdm_request.response->offset};
+    uint64_t hhdm_offset = hhdm_request.response->offset;
+    *auxtarg++ =
+        (auxv_t){.a_type = AT_KXINIX_HHDM_OFFSET, .a_un.a_val = hhdm_offset};
+
+    struct {
+        char signature[8];
+        uint8_t checksum;
+        char oemid[6];
+        uint8_t revision;
+        uint32_t rsdt_address;
+        uint32_t length;
+        uint64_t xsdt_address;
+        uint8_t extended_checksum;
+    } *rsdp = rsdp_request.response->address;
+
+    // TODO: verify checksum
+
+    *auxtarg++ = (auxv_t){.a_type = AT_KXINIX_RSDT_ADDR,
+                          .a_un.a_val = hhdm_offset + rsdp->rsdt_address};
+
+    if (rsdp->revision >= 2) {
+        *auxtarg++ = (auxv_t){.a_type = AT_KXINIX_XSDT_ADDR,
+                              .a_un.a_val = hhdm_offset + rsdp->xsdt_address};
+    }
 
     kmain(1, argv, envp, auxv);
 }

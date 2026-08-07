@@ -1,4 +1,5 @@
 #include "cpuid.h"
+#include <acpi.h>
 #include <auxv.h>
 #include <framebuffer.h>
 #include <memmap.h>
@@ -188,6 +189,9 @@ extern void kmain(int argc, char *argv[], char *envp[], auxv_t auxv[]) {
                memory_map->entries[i].base - 1 + memory_map->entries[i].length,
                memmap_type_name(memory_map->entries[i].type));
     }
+    printf("\r\n");
+
+    load_system_descriptor_tables();
 
     hcf();
 }

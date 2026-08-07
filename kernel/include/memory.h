@@ -12,3 +12,4 @@ void *calloc(size_t num, size_t size);
 void free(void *ptr);
 
 size_t strlen(const char *str);
+size_t strnlen(const char *str, size_t maxlen);

@@ -476,8 +476,12 @@ int vfprintf(FILE *restrict stream, const char *restrict format,
         case 's':
             const char *string = va_arg(vlist, const char *);
             // TODO: flags, specifiers, everything else
-            // TODO: if precision specified, cap strlen at specified precision
-            size_t len = strlen(string);
+            size_t len;
+            if (precision == -1) {
+                len = strlen(string);
+            } else {
+                len = strnlen(string, precision);
+            }
             WRITE_CHECKED(stream, len, string, bytes_printed);
             break;
         default:

@@ -106,3 +106,11 @@ size_t strlen(const char *str) {
     }
     return result;
 }
+
+size_t strnlen(const char *str, size_t maxlen) {
+    size_t result = 0;
+    while (*str++ != 0 && result < maxlen) {
+        result += 1;
+    }
+    return result;
+}
