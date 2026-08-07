@@ -4,11 +4,11 @@
 
 void print_sdt_header(sdt_header_t *sdt_p) {
     printf("Table %.4s\r\n", sdt_p->signature);
-    printf("OEMID: %.6s\r\n", sdt_p->oemid);
-    printf("OEM Table ID: %.8s\r\n", sdt_p->oem_table_id);
-    printf("OEM Revision: %08X\r\n", sdt_p->oem_revision);         // TODO: %d
-    printf("Creator ID: %08X\r\n", sdt_p->creator_id);             // TODO: %d
-    printf("Creator Revision: %08X\r\n", sdt_p->creator_revision); // TODO: %d
+    printf("OEMID: %.6s -- Table ID: %.8s -- Revision: %08X\r\n", sdt_p->oemid,
+           sdt_p->oem_table_id, sdt_p->oem_revision); // TODO: %d
+    printf("               Creator ID: %08X -- Revision: %08X\r\n\r\n",
+           sdt_p->creator_id,
+           sdt_p->creator_revision); // TODO: %d
 }
 
 void load_xsdt(void) {
@@ -22,7 +22,11 @@ void load_rsdt(void) {
     rsdt_t *rsdt_p = getauxval(AT_KXINIX_RSDT_ADDR).a_ptr;
     print_sdt_header(&rsdt_p->header);
 
-    // TODO: read structures
+    int num_sdts = (rsdt_p->header.length - sizeof(sdt_header_t)) / 4;
+    size_t hhdm_offset = getauxval(AT_KXINIX_HHDM_OFFSET).a_val;
+    for (int i = 0; i < num_sdts; i++) {
+        print_sdt_header((sdt_header_t *)(hhdm_offset + rsdt_p->entries[i]));
+    }
 }
 
 void load_system_descriptor_tables(void) {
