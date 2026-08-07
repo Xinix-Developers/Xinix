@@ -12,7 +12,8 @@ int rand_init(random_generator *restrict _gen) {
     return 0;
 }
 
-void rand_injest(random_generator *restrict _gen, const uint8_t  _entropy[static restrict 16]) {
+void rand_injest(random_generator *restrict _gen,
+                 const uint8_t _entropy[static restrict 16]) {
     sha3_absorb(&_gen->_state, _entropy, 16);
     sha3_permute(&_gen->_state);
 }

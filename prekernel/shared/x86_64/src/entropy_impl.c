@@ -12,7 +12,7 @@ int rand_slow_get_entropy(uint8_t _output[static restrict 16]) {
     } else if (is_x86_feature_detected(rdrand)) {
         __asm__ volatile("2: rdrand %0\n\tjnc 2b\n\t2: rdrand %1\n\tjnc 2b"
                          : "=r"(a[0]), "=r"(a[1]));
-    } else if(is_x86_feature_detected(tsc)) {
+    } else if (is_x86_feature_detected(tsc)) {
         for (size_t i = 0; i < 64; i += 2) {
             uint32_t r;
             __asm__ volatile("cpuid\n\trdtsc" : "=a"(r)::"edx", "ecx", "ebx");
