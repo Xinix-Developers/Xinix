@@ -24,4 +24,10 @@ typedef struct [[gnu::packed]] xsdt {
     uint64_t entries[]; // flexible
 } xsdt_t;
 
+typedef struct madt {
+    sdt_header_t header;
+    uint32_t local_apic_address;
+    uint32_t flags;
+} madt_header_t;
+
 extern void load_system_descriptor_tables(void);
