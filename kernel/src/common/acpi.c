@@ -15,7 +15,11 @@ void load_xsdt(void) {
     xsdt_t *xsdt_p = getauxval(AT_KXINIX_XSDT_ADDR).a_ptr;
     print_sdt_header(&xsdt_p->header);
 
-    // TODO: read structures
+    int num_sdts = (xsdt_p->header.length - sizeof(sdt_header_t)) / 8;
+    size_t hhdm_offset = getauxval(AT_KXINIX_HHDM_OFFSET).a_val;
+    for (int i = 0; i < num_sdts; i++) {
+        print_sdt_header((sdt_header_t *)(hhdm_offset + xsdt_p->entries[i]));
+    }
 }
 
 void load_rsdt(void) {
