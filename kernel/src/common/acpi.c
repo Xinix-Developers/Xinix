@@ -20,7 +20,7 @@ void load_madt(madt_header_t *madt_p) {
         uint8_t entry_type = byte_reader[pos];
         uint8_t record_length = byte_reader[pos + 1];
         switch (entry_type) {
-            default:
+        default:
             printf("unrecognized MADT entry type %X\r\n", entry_type);
         }
         pos += record_length;
